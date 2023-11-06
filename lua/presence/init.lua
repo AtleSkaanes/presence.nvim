@@ -68,7 +68,20 @@ local default_file_assets = require("presence.file_assets")
 local plugin_managers = require("presence.plugin_managers")
 local Discord = require("presence.discord")
 
+local instance_data = require("presence.instance_data")
+
 function Presence:setup(...)
+    if instance_data.DoesOtherInstanceExists() then
+        return
+    end
+    vim.api.nvim_create_autocmd(
+        { 'VimLeave' },
+        {
+            callback = instance_data.QuitInstance
+        }
+    )
+    instance_data.StartInstance()
+
     -- Support setup invocation via both dot and colon syntax.
     -- To maintain backwards compatibility, colon syntax will still
     -- be supported, but dot syntax should be recommended.
